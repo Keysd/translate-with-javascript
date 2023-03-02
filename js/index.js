@@ -40,10 +40,11 @@
         };
     });
 
-    //Handle event
-    fromText.onkeyup = handleTranslate;
+    // Handle event
+    fromText.oninput = handleTranslate;
     exchangeBtn.onclick = swapLanguage;
 
+    // custom method
     function swapLanguage() {
         const tempText = fromText.value,
             tempSelect = translateInput.value;
@@ -67,18 +68,18 @@
                 let translateFrom = translateInput.value,
                     translateTo = translateOutput.value;
 
-                let apiUrl = `https://api.mymemory.translated.net/get?q=${translate}!&langpair=${translateFrom}|${translateTo}`;
+                let apiTranslator = `https://api.mymemory.translated.net/get?q=${translate}!&langpair=${translateFrom}|${translateTo}`;
                 let apiGoogle = `https://translate.googleapis.com/translate_a/single?client=gtx&s${translateFrom}&tl1=${translateTo}&dt=t&q=${translate}`;
 
-                const response = await fetch(apiUrl);
+                const response = await fetch(apiTranslator);
                 const data = await response.json();
 
                 toText.value = data.responseData.translatedText;
-                toText.setAttribute('placeholder', 'Translation');
+                toText.setAttribute('placeholder', 'Translate');
             }, 500);
         } else {
+            toText.setAttribute('placeholder', 'Translate');
             toText.value = '';
-            toText.setAttribute('placeholder', 'Translation');
         }
     }
 
