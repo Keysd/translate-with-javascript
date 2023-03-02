@@ -6,6 +6,7 @@
     const exchangeBtn = $('.exchange');
     const fromText = $('.from-text');
     const toText = $('.to-text');
+    const [translateInput, translateOutput] = selectTag;
 
     selectTag.forEach((element, index) => {
         for (const country in countries) {
@@ -31,9 +32,9 @@
                 }
             } else {
                 if (target.id == 'from') {
-                    handleSpeak(fromText.value, selectTag[0].value);
+                    handleSpeak(fromText.value, translateInput.value);
                 } else {
-                    handleSpeak(toText.value, selectTag[1].value);
+                    handleSpeak(toText.value, translateOutput.value);
                 }
             }
         };
@@ -45,12 +46,12 @@
 
     function swapLanguage() {
         const tempText = fromText.value,
-            tempSelect = selectTag[0].value;
+            tempSelect = translateInput.value;
         fromText.value = toText.value;
         toText.value = tempText;
 
-        selectTag[0].value = selectTag[1].value;
-        selectTag[1].value = tempSelect;
+        translateInput.value = translateOutput.value;
+        translateOutput.value = tempSelect;
     }
 
     let timerId;
@@ -60,22 +61,20 @@
         if (timerId) {
             clearTimeout(timerId);
         }
-        let text = fromText.value;
-        if (text) {
-            timerId = setTimeout(() => {
-                let translateFrom = selectTag[0].value,
-                    translateTo = selectTag[1].value;
+        let translate = fromText.value;
+        if (translate) {
+            timerId = setTimeout(async () => {
+                let translateFrom = translateInput.value,
+                    translateTo = translateOutput.value;
 
-                let apiUrl = `https://api.mymemory.translated.net/get?q=${text}!&langpair=${translateFrom}|${translateTo}`;
-                let apiGoogle = `https://translate.googleapis.com/translate_a/single?client=gtx&s${translateFrom}&tl1=${translateTo}&dt=t&q=${text}`;
+                let apiUrl = `https://api.mymemory.translated.net/get?q=${translate}!&langpair=${translateFrom}|${translateTo}`;
+                let apiGoogle = `https://translate.googleapis.com/translate_a/single?client=gtx&s${translateFrom}&tl1=${translateTo}&dt=t&q=${translate}`;
 
-                fetch(apiUrl)
-                    .then((res) => res.json())
-                    .then((data) => {
-                        toText.value = data.responseData.translatedText;
-                        toText.setAttribute('placeholder', 'Translation');
-                    })
-                    .catch((er) => console.log(er));
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                toText.value = data.responseData.translatedText;
+                toText.setAttribute('placeholder', 'Translation');
             }, 500);
         } else {
             toText.value = '';
